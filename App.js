@@ -1,63 +1,65 @@
-import { SketchPicker, BlockPicker } from "react-color";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios"; // Import Axios
 
 function App() {
-  //creating state to store our color and also set color using onChange event for sketch picker
-  const [sketchPickerColor, setSketchPickerColor] = useState({
-    r: "241",
-    g: "112",
-    b: "19",
-    a: "1",
-  });
-  // destructuring rgba from state
-  const { r, g, b, a } = sketchPickerColor;
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  //creating state to store our color and also set color using onChange event for block picker
-  const [blockPickerColor, setBlockPickerColor] = useState("#37d67a");
+  useEffect(() => {
+    setLoading(true);
+    axios
+      .get("https://dummyjson.com/users") // Use Axios for the GET request
+      .then(response => {
+        setUsers(response.data); // Axios response data is in response.data
+      })
+      .catch(error => {
+        console.error("Axios error:", error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
 
   return (
-    <div
-      className="App"
-      style={{ display: "flex", justifyContent: "space-around" }}
-    >
-      <div className="sketchpicker">
-        <h6>Sketch Picker</h6>
-        {/* Div to display the color  */}
-        <div
-          style={{
-            backgroundColor: `rgba(${r},${g},${b},${a})`,
-            width: 100,
-            height: 50,
-            border: "2px solid white",
-          }}
-        ></div>
-        {/* Sketch Picker from react-color and handling color on onChange event */}
-        <SketchPicker
-          onChange={(color) => {
-            setSketchPickerColor(color.rgb);
-          }}
-          color={sketchPickerColor}
-        />
-      </div>
-      <div className="blockpicker">
-        <h6>Color Picker</h6>
-        {/* Div to display the color  */}
-        <div
-          style={{
-            backgroundColor: `${blockPickerColor}`,
-            width: 100,
-            height: 50,
-            border: "2px solid white",
-          }}
-        ></div>
-        {/* Block Picker from react-color and handling color on onChange event */}
-        <BlockPicker
-          color={blockPickerColor}
-          onChange={(color) => {
-            setBlockPickerColor(color.hex);
-          }}
-        />
-      </div>
+    <div className="App">
+      {loading ? (
+        <div>Loading...</div>
+      ) : (
+        <>
+          <h1>Dummy Data</h1>
+          <table border={1}>
+            <thead>
+              <tr>
+                <th>Sno</th>
+                <th>Profile Pic</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Gender</th>
+                <th>email</th>
+                <th>Username</th>
+                <th>Phone</th>
+                <th>IP</th>
+                <th>University</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map(user => (
+                <tr key={user.id}>
+                  <td>{user.id}</td>
+                  <td>{user.image}</td>
+                  <td>{user.firstName}</td>
+                  <td>{user.lastName}</td>
+                  <td>{user.gender}</td>
+                  <td>{user.username}</td>
+                  <td>{user.phone}</td>
+                  <td>{user.ip}</td>
+                  <td>{user.university}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
     </div>
   );
 }
